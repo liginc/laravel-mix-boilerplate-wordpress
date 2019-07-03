@@ -15,7 +15,7 @@ require('laravel-mix-imagemin')
 const themeName = 'input-theme-name'
 
 const srcDirName = `resources/themes/${themeName}`
-const distDirName = `wp-content/themes/${themeName}`
+const distDirName = `wp/wp-content/themes/${themeName}`
 
 // Clean output directory
 fs.removeSync(`${distDirName}/assets`)
