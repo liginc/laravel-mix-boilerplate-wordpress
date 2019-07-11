@@ -8,30 +8,28 @@ require('laravel-mix-eslint')
 require('laravel-mix-stylelint')
 require('laravel-mix-imagemin')
 
-// 1. Replace following 'input-theme-name' to your theme name
-// 2. Rename following directories to your theme name
-//   resources/themes/input-theme-name
-//   wp-content/themes/input-theme-name
-const themeName = 'input-theme-name'
+const srcRelativePath =
+  (process.env.MIX_SRC_RELATIVE_PATH || 'resources/themes/input-theme-name')
+    .replace(/\/$/, '')
+const distRelativePath =
+  (process.env.MIX_DIST_RELATIVE_PATH || 'wp-content/themes/input-theme-name')
+    .replace(/\/$/, '')
 
-const srcDirName = `resources/themes/${themeName}`
-const distDirName = `wp-content/themes/${themeName}`
-
-// Clean output directory
-fs.removeSync(`${distDirName}/assets`)
+// Clean public directory
+fs.removeSync(`${distRelativePath}/assets`)
 
 mix
   // Set output directory of mix-manifest.json
-  .setPublicPath(distDirName)
+  .setPublicPath(distRelativePath)
   .polyfill()
   .js(
-    `${srcDirName}/assets/js/app.js`,
-    `${distDirName}/assets/js`
+    `${srcRelativePath}/assets/js/app.js`,
+    `${distRelativePath}/assets/js`
   )
   .eslint()
   .sass(
-    `${srcDirName}/assets/css/app.scss`,
-    `${distDirName}/assets/css`
+    `${srcRelativePath}/assets/css/app.scss`,
+    `${distRelativePath}/assets/css`
   )
   .stylelint()
   .options({ processCssUrls: false })
@@ -41,7 +39,7 @@ mix
         // Subdirectories (sprite/**/*.svg) are not allowed
         // Because same ID attribute is output multiple times,
         // if file names are duplicated among multiple directories
-        `${srcDirName}/assets/svg/sprite/*.svg`,
+        `${srcRelativePath}/assets/svg/sprite/*.svg`,
         {
           output: {
             filename: 'assets/svg/sprite.svg',
@@ -66,30 +64,30 @@ mix
   // Copy SVG that is not sprite
   .copyWatched(
     [
-      `${srcDirName}/assets/svg/!(sprite)`,
-      `${srcDirName}/assets/svg/!(sprite)/**/*`
+      `${srcRelativePath}/assets/svg/!(sprite)`,
+      `${srcRelativePath}/assets/svg/!(sprite)/**/*`
     ],
-    `${distDirName}/assets/svg`,
-    { base: `${srcDirName}/assets/svg` }
+    `${distRelativePath}/assets/svg`,
+    { base: `${srcRelativePath}/assets/svg` }
   )
   .browserSync({
     open: false,
-    host: process.env.BROWSER_SYNC_HOST || 'localhost',
-    port: process.env.BROWSER_SYNC_PORT || 3000,
-    proxy: process.env.BROWSER_SYNC_PROXY || false,
-    // If this setting is `${distDirName}/**/*`,
+    host: process.env.MIX_BROWSER_SYNC_HOST || 'localhost',
+    port: process.env.MIX_BROWSER_SYNC_PORT || 3000,
+    proxy: process.env.MIX_BROWSER_SYNC_PROXY || false,
+    // If this setting is `${distRelativePath}/**/*`,
     // injection of changes such as CSS will be not available
     // https://github.com/JeffreyWay/laravel-mix/issues/1053
     files: [
-      `${distDirName}/assets/**/*`,
-      `${distDirName}/**/*.php`
+      `${distRelativePath}/assets/**/*`,
+      `${distRelativePath}/**/*.php`
     ],
     https:
-      process.env.BROWSER_SYNC_HTTPS_CERT &&
-      process.env.BROWSER_SYNC_HTTPS_KEY
+      process.env.MIX_BROWSER_SYNC_HTTPS_CERT &&
+      process.env.MIX_BROWSER_SYNC_HTTPS_KEY
         ? {
-          cert: process.env.BROWSER_SYNC_HTTPS_CERT,
-          key: process.env.BROWSER_SYNC_HTTPS_KEY
+          cert: process.env.MIX_BROWSER_SYNC_HTTPS_CERT,
+          key: process.env.MIX_BROWSER_SYNC_HTTPS_KEY
         }
         : false
     // Reloading is necessary to see the change of the SVG file
@@ -110,7 +108,7 @@ if (process.env.NODE_ENV === 'production') {
     .imagemin(
       // Options for copying
       [ 'assets/images/**/*' ],
-      { context: srcDirName },
+      { context: srcRelativePath },
       // Options for optimization
       {
         // To find targets exactly, requires test option that is function
@@ -123,8 +121,8 @@ if (process.env.NODE_ENV === 'production') {
     // Delete chunk file for SVG sprite
     .then(() => {
       const svgDummyModuleName = 'assets/js/.svg-dummy-module'
-      fs.removeSync(`${distDirName}/${svgDummyModuleName}.js`)
-      const pathToManifest = `${distDirName}/mix-manifest.json`
+      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`)
+      const pathToManifest = `${distRelativePath}/mix-manifest.json`
       const manifest = require(`./${pathToManifest}`)
       delete manifest[`/${svgDummyModuleName}.js`]
       fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
@@ -136,8 +134,8 @@ else {
   mix
     // Copy images without optimization in development
     .copyWatched(
-      `${srcDirName}/assets/images`,
-      `${distDirName}/assets/images`,
-      { base: `${srcDirName}/assets/images` }
+      `${srcRelativePath}/assets/images`,
+      `${distRelativePath}/assets/images`,
+      { base: `${srcRelativePath}/assets/images` }
     )
 }
