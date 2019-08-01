@@ -15,12 +15,10 @@ const distRelativePath =
   (process.env.MIX_DIST_RELATIVE_PATH || 'wp-content/themes/input-theme-name')
     .replace(/\/$/, '')
 
-// Clean public directory
 fs.removeSync(`${distRelativePath}/assets`)
 
 mix
-  // Set output directory of mix-manifest.json
-  .setPublicPath(distRelativePath)
+  .setPublicPath(distRelativePath) // *1
   .polyfill()
   .js(
     `${srcRelativePath}/assets/js/app.js`,
@@ -36,23 +34,17 @@ mix
   .webpackConfig({
     plugins: [
       new SVGSpritemapPlugin(
-        // Subdirectories (sprite/**/*.svg) are not allowed
-        // Because same ID attribute is output multiple times,
-        // if file names are duplicated among multiple directories
-        `${srcRelativePath}/assets/svg/sprite/*.svg`,
+        `${srcRelativePath}/assets/svg/sprite/*.svg`, // *2
         {
           output: {
             filename: 'assets/svg/sprite.svg',
-            // Keep chunk file without deletion
-            // Because error occurs if chunk file has deleted when creating mix-manifest.json
             chunk: {
               name: 'assets/js/.svg-dummy-module',
-              keep: true
+              keep: true // *3
             },
             svgo: {
               plugins: [
-                // Required to hide sprite
-                { addClassesToSVGElement: { className: 'svg-sprite' } }
+                { addClassesToSVGElement: { className: 'svg-sprite' } } // *4
               ]
             },
             svg4everybody: true
@@ -61,8 +53,7 @@ mix
       )
     ]
   })
-  // Copy SVG that is not sprite
-  .copyWatched(
+  .copyWatched( // *5
     [
       `${srcRelativePath}/assets/svg/!(sprite)`,
       `${srcRelativePath}/assets/svg/!(sprite)/**/*`
@@ -70,16 +61,13 @@ mix
     `${distRelativePath}/assets/svg`,
     { base: `${srcRelativePath}/assets/svg` }
   )
-  .browserSync({
+  .browserSync({ // *6
     open: false,
     host: process.env.MIX_BROWSER_SYNC_HOST || 'localhost',
     port: process.env.MIX_BROWSER_SYNC_PORT || 3000,
     proxy: process.env.MIX_BROWSER_SYNC_PROXY || false,
-    // If this setting is `${distRelativePath}/**/*`,
-    // injection of changes such as CSS will be not available
-    // https://github.com/JeffreyWay/laravel-mix/issues/1053
     files: [
-      `${distRelativePath}/assets/**/*`,
+      `${distRelativePath}/assets/**/*`, // *7
       `${distRelativePath}/**/*.php`
     ],
     https:
@@ -90,52 +78,90 @@ mix
           key: process.env.MIX_BROWSER_SYNC_HTTPS_KEY
         }
         : false
-    // Reloading is necessary to see the change of the SVG file
-    // But BrowserSync execute ingection for SVG changes
-    // Options of BrowserSync can not change this behavior
-    // https://github.com/BrowserSync/browser-sync/issues/1287
   })
-  // First argument whether source map is output in production
-  // Second argument is source map type. Note that several types don't output map for CSS
-  // https://webpack.js.org/configuration/devtool/#devtool
-  .sourceMaps(false, 'inline-cheap-module-source-map')
+  .sourceMaps(false, 'inline-cheap-module-source-map') // *8
 
-// Only in production mode
 if (process.env.NODE_ENV === 'production') {
   mix
     .version()
-    // Copy and optimize images in production
     .imagemin(
-      // Options for copying
       [ 'assets/images/**/*' ],
       { context: srcRelativePath },
-      // Options for optimization
       {
-        // To find targets exactly, requires test option that is function
-        test: filePath => !!multimatch(filePath, [ 'assets/images/**/*' ]).length,
+        test: filePath => !!multimatch(filePath, [ 'assets/images/**/*' ]).length, // *9
         pngquant: { strip: true, quality: 100-100 }, // 0 ~ 100
         gifsicle: { optimizationLevel: 1 }, // 1 ~ 3
         plugins: [ require('imagemin-mozjpeg')({ quality: 100 }) ] // 0 ~ 100
       }
     )
-    // Delete chunk file for SVG sprite
     .then(() => {
       const svgDummyModuleName = 'assets/js/.svg-dummy-module'
-      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`)
+      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`) // *10
       const pathToManifest = `${distRelativePath}/mix-manifest.json`
       const manifest = require(`./${pathToManifest}`)
       delete manifest[`/${svgDummyModuleName}.js`]
-      fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
+      fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8') // *11
     })
 }
 
-// Only in development mode
 else {
   mix
-    // Copy images without optimization in development
-    .copyWatched(
+    .copyWatched( // *12
       `${srcRelativePath}/assets/images`,
       `${distRelativePath}/assets/images`,
       { base: `${srcRelativePath}/assets/images` }
     )
 }
+
+/*
+
+*1
+`setPublicPath()` is required.
+Because it determines directory where mix-manifest.json is output.
+
+*2
+Following setting must not be set.
+`${srcRelativePath}/assets/svg/sprite/** /*.svg`
+Because, file name determines id attribute, so all target file names must be unique.
+
+*3
+Keep chunk file without deletion.
+Because error occurs if chunk file has deleted when creating mix-manifest.json.
+
+*4
+`svg-sprite` class is required.
+Because it has style to hide sprite.
+
+*5
+This method copies SVG that is not sprite.
+
+*6
+Although reloading is necessary to see changes of the SVG file,
+BrowserSync executes ingection instead of reloading when changing SVG.
+Options of BrowserSync can not change this behavior.
+https://github.com/BrowserSync/browser-sync/issues/1287
+
+*7
+Following setting must not be set.
+`${distRelativePath}/** /*`
+Because injection of changes such as CSS will be not available.
+https://github.com/JeffreyWay/laravel-mix/issues/1053
+
+*8
+Note that several types don't output map for CSS.
+https://webpack.js.org/configuration/devtool/#devtool
+
+*9
+`test` option is required.
+Because imagemin can not find targets exactly without this function.
+
+*10
+This is unnecessary chunk file created by SVGSpritemapPlugin.
+
+*11
+Data of file removed in *9, are removed from mix-manifest.json too.
+
+*12
+It is unnecessary to optimize images in development mode.
+
+*/
