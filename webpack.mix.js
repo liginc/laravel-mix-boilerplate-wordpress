@@ -18,7 +18,7 @@ const distRelativePath =
 fs.removeSync(`${distRelativePath}/assets`)
 
 mix
-  .setPublicPath(distRelativePath) // *1
+  .setPublicPath(distRelativePath)
   .polyfill()
   .js(
     `${srcRelativePath}/assets/js/app.js`,
@@ -34,17 +34,17 @@ mix
   .webpackConfig({
     plugins: [
       new SVGSpritemapPlugin(
-        `${srcRelativePath}/assets/svg/sprite/*.svg`, // *2
+        `${srcRelativePath}/assets/svg/sprite/*.svg`,
         {
           output: {
             filename: 'assets/svg/sprite.svg',
             chunk: {
               name: 'assets/js/.svg-dummy-module',
-              keep: true // *3
+              keep: true
             },
             svgo: {
               plugins: [
-                { addClassesToSVGElement: { className: 'svg-sprite' } } // *4
+                { addClassesToSVGElement: { className: 'svg-sprite' } }
               ]
             },
             svg4everybody: true
@@ -53,7 +53,7 @@ mix
       )
     ]
   })
-  .copyWatched( // *5
+  .copyWatched(
     [
       `${srcRelativePath}/assets/svg/!(sprite)`,
       `${srcRelativePath}/assets/svg/!(sprite)/**/*`
@@ -61,13 +61,13 @@ mix
     `${distRelativePath}/assets/svg`,
     { base: `${srcRelativePath}/assets/svg` }
   )
-  .browserSync({ // *6
+  .browserSync({
     open: false,
     host: process.env.MIX_BROWSER_SYNC_HOST || 'localhost',
     port: process.env.MIX_BROWSER_SYNC_PORT || 3000,
     proxy: process.env.MIX_BROWSER_SYNC_PROXY || false,
     files: [
-      `${distRelativePath}/assets/**/*`, // *7
+      `${distRelativePath}/assets/**/*`,
       `${distRelativePath}/**/*.php`
     ],
     https:
@@ -79,7 +79,7 @@ mix
         }
         : false
   })
-  .sourceMaps(false, 'inline-cheap-module-source-map') // *8
+  .sourceMaps(false, 'inline-cheap-module-source-map')
 
 if (process.env.NODE_ENV === 'production') {
   mix
@@ -88,7 +88,7 @@ if (process.env.NODE_ENV === 'production') {
       [ 'assets/images/**/*' ],
       { context: srcRelativePath },
       {
-        test: filePath => !!multimatch(filePath, [ 'assets/images/**/*' ]).length, // *9
+        test: filePath => !!multimatch(filePath, [ 'assets/images/**/*' ]).length,
         pngquant: { strip: true, quality: 100-100 }, // 0 ~ 100
         gifsicle: { optimizationLevel: 1 }, // 1 ~ 3
         plugins: [ require('imagemin-mozjpeg')({ quality: 100 }) ] // 0 ~ 100
@@ -96,72 +96,19 @@ if (process.env.NODE_ENV === 'production') {
     )
     .then(() => {
       const svgDummyModuleName = 'assets/js/.svg-dummy-module'
-      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`) // *10
+      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`)
       const pathToManifest = `${distRelativePath}/mix-manifest.json`
       const manifest = require(`./${pathToManifest}`)
       delete manifest[`/${svgDummyModuleName}.js`]
-      fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8') // *11
+      fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
     })
 }
 
 else {
   mix
-    .copyWatched( // *12
+    .copyWatched(
       `${srcRelativePath}/assets/images`,
       `${distRelativePath}/assets/images`,
       { base: `${srcRelativePath}/assets/images` }
     )
 }
-
-/*
-
-*1
-`setPublicPath()` is required.
-Because it determines directory where mix-manifest.json is output.
-
-*2
-Following setting must not be set.
-`${srcRelativePath}/assets/svg/sprite/** /*.svg`
-Because, file name determines id attribute, so all target file names must be unique.
-
-*3
-Keep chunk file without deletion.
-Because error occurs if chunk file has deleted when creating mix-manifest.json.
-
-*4
-`svg-sprite` class is required.
-Because it has style to hide sprite.
-
-*5
-This method copies SVG that is not sprite.
-
-*6
-Although reloading is necessary to see changes of the SVG file,
-BrowserSync executes ingection instead of reloading when changing SVG.
-Options of BrowserSync can not change this behavior.
-https://github.com/BrowserSync/browser-sync/issues/1287
-
-*7
-Following setting must not be set.
-`${distRelativePath}/** /*`
-Because injection of changes such as CSS will be not available.
-https://github.com/JeffreyWay/laravel-mix/issues/1053
-
-*8
-Note that several types don't output map for CSS.
-https://webpack.js.org/configuration/devtool/#devtool
-
-*9
-`test` option is required.
-Because imagemin can not find targets exactly without this function.
-
-*10
-This is unnecessary chunk file created by SVGSpritemapPlugin.
-
-*11
-Data of file removed in *9, are removed from mix-manifest.json too.
-
-*12
-It is unnecessary to optimize images in development mode.
-
-*/
