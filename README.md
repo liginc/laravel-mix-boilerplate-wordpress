@@ -1,12 +1,12 @@
-# ワードプレス用Laravel Mix定型文
+# Laravel Mix Boilerplate WP版
 
 ## 使用法
 
 ### 初期設定
 
-1. 好きな方法でWordPressを構築します。 Docker、XAMPP、およびFlywheelによるローカル。
+1. 好きな方法でWordPressを構築します。 Docker、XAMPP、およびLocal By Flywheel
 
-2. シンボリックリンクを使用して、WordPressの `wp-content / themes / input-theme-name`から、このREADME.mdを含む` wp-content / themes / input-theme-name`を参照します。
+2. シンボリックリンクを使用して、WordPressの `wp-content/themes/input-theme-name`から、このREADME.mdを含む` wp-content/themes/input-theme-name`を参照します。
 
 3. 作成したWordPressの管理ページからtheme： `input-theme-name`を適用してください。
 
@@ -16,13 +16,13 @@
 
 ### 次
 
-1. `wp-content / themes / input-theme-name / style.css`を開いてコメントを編集してください。
+1. `wp-content/themes/input-theme-name/style.css`を開いてコメントを編集してください。
 
 2. `package.json`を開き、プロパティを編集します。名前、説明など
 
 3. `webpack.mix.js`を開き、あなたのテーマ名を` themeName`に設定します。
 
-4. `resources / themes / input-theme-name`と` wp-content / themes / input-theme-name`の名前をあなたのテーマの名前に変更します。
+4. `resources/themes/input-theme-name`と` wp-content/themes/input-theme-name`の名前をあなたのテーマの名前に変更します。
 
 ---------
 
