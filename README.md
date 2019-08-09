@@ -1,54 +1,141 @@
-# Laravel Mix Boilerplate WP版
+# Laravel Mix Boilerplate for WordPress
 
 ## 使用法
 
-### インストール
+`foobar-japan` というテーマの作成を例として説明します。  
+`foobar-japan` の箇所を、お好きなテーマ名に置き換えて読み進めてください。  
 
-1. 好きな方法でWordPressを構築します。 Docker、XAMPP、Local By Flywheelなど。
+### 準備（テーマ名変更）
 
-2. シンボリックリンクを使用して、WordPressの`wp-content/themes/input-theme-name`から、このREADME.mdを含む`wp-content/themes/input-theme-name`を参照します。
+1. `wp-content/themes/input-theme-name/style.css` を開き、コメントを変更してください。
+```
+Theme Name: FooBar Japan
+Description: FooBar Japan Corporate site
+```
 
-3. 作成したWordPressの管理画面からテーマ`input-theme-name`を適用してください。
+2. `package.json` を開き、各種プロパティを変更してください。
+```
+"name": "foobar-japan",
+"description": "FooBar Japan Corporate site",
+```
 
-4. `.env-sample`をコピーして`.env`を作成し、`.env`を開き、WordPressのURLを`BROWSER_SYNC_PROXY`に設定します。
-例:`http://localhost:8000`  `http://wordpress.test`
+3. `.env` を開き、`MIX_SRC_RELATIVE_PATH`, `MIX_DIST_RELATIVE_PATH` に含まれるテーマ名を変更してください
+```
+MIX_SRC_RELATIVE_PATH=resources/themes/foobar-japan
+MIX_DIST_RELATIVE_PATH=wp-content/themes/foobar-japan
+```
 
-5. `npm i`と`npm run dev`を実行すると、サンプルページが `http://localhost:3000`に表示されます。
+4. テーマディレクトリの名前を変更してください。
+```
+$ mv resources/themes/input-theme-name resources/themes/foobar-japan
+$ mv wp-content/themes/input-theme-name wp-content/themes/foobar-japan
+```
 
-### 初期設定
+### 起動
 
-1. `wp-content/themes/input-theme-name/style.css`を開いてコメントを編集してください。
+1. お好みの方法で WordPress を構築します。Docker, XAMPP, Local By Flywheel など。
 
-2. `package.json`を開き、プロパティを編集します。`name`,`description`など。
+2. シンボリックリンクを使用し、Laravel Mix Boilerplate のテーマディレクトリを、1で構築された WordPress から参照します。
+```
+$ ln -s wp-content/themes/foobar-japan /path/to/wp/wp-content/themes/foobar-japan
+```
 
-3. `webpack.mix.js`を開き、テーマ名を変数`themeName`に設定します。
+3. 1で構築された WordPress の管理画面を開き、テーマを変更してください。
+```
+Twenty XXXXX -> FooBar Japan
+```
 
-4. `resources/themes/input-theme-name`と`wp-content/themes/input-theme-name`の名前をあなたのテーマの名前に変更します。
+4. Laravel Mix Boilerplate の `.env-sample` を複製し、名前を `.env` に変更してください。
+```
+$ cp .env-sample .env
+```
 
----------
+5. 4で作成された `.env` を開き、WordPress の URL を `MIX_BROWSER_SYNC_PROXY` に設定します。
+```
+MIX_BROWSER_SYNC_PROXY=http://localhost:8000
+```
 
-# Laravel Mix Boilerplate for WordPress
+6. 依存パッケージをインストールします。
+```
+$ npm i
+```
+
+7. 開発用コマンドを実行し、`http://localhost:3000` へアクセスすると、サンプルページが表示されます。
+```
+$ npm run dev
+```
+
+8. 本番環境へ反映する前には、本番用コマンドを実行してください。
+```
+$ npm run prod
+```
 
 ## Usage
 
-### At first
+This doc takes the creation of a theme named `foobar-japan` as an example.  
+Replace `foobar-japan` with your theme name.  
+
+### At first (Update theme name)
+
+1. Open `wp-content/themes/input-theme-name/style.css`, and update comments.
+```
+Theme Name: FooBar Japan
+Description: FooBar Japan Corporate site
+```
+
+2. Open `package.json`, and update properties.
+```
+"name": "foobar-japan",
+"description": "FooBar Japan Corporate site",
+```
+
+3. Open `.env`, update theme name in `MIX_SRC_RELATIVE_PATH` and `MIX_DIST_RELATIVE_PATH`.
+```
+MIX_SRC_RELATIVE_PATH=resources/themes/foobar-japan
+MIX_DIST_RELATIVE_PATH=wp-content/themes/foobar-japan
+```
+
+4. Update names of theme directories.
+```
+$ mv resources/themes/input-theme-name resources/themes/foobar-japan
+$ mv wp-content/themes/input-theme-name wp-content/themes/foobar-japan
+```
+
+### Run
 
 1. Construct WordPress in your favorite way, e.g. Docker, XAMPP, and Local by Flywheel.
 
-2. With symbolic link, reffer `wp-content/themes/input-theme-name` that contains this README.md, from `wp-content/themes/input-theme-name` in your WordPress.
+2. With symbolic link, refer theme directory in Laravel Mix Boilerplate, from theme directory in WordPress.
+```
+$ ln -s wp-content/themes/foobar-japan /path/to/wp/wp-content/themes/foobar-japan
+```
 
-3. From admin page of your constructed WordPress, apply theme: `input-theme-name` .
+3. Open admin page of WordPress, and switch theme.
+```
+Twenty XXXXX -> FooBar Japan
+```
 
-4. Create `.env` by copying `.env-sample` , open `.env` , and set WordPress URL to `BROWSER_SYNC_PROXY` , e.g. `http://localhost:8000` and `http://wordpress.test` .
+4. Duplicate `.env` as `.env-sample`.
+```
+$ cp .env-sample .env
+```
 
-5. Run `npm i` and `npm run dev` , you will see sample page in `http://localhost:3000` .
+5. Open `.env`, and set WordPress URL to `MIX_BROWSER_SYNC_PROXY`.
+```
+MIX_BROWSER_SYNC_PROXY=http://localhost:8000
+```
 
-### Next
+6. Install dependencies.
+```
+$ npm i
+```
 
-1. Open `wp-content/themes/input-theme-name/style.css` , and edit comments.
+7. Run command for development, then you can see sample page.
+```
+$ npm run dev
+```
 
-2. Open `package.json` , and edit properties.`name`,`description`, and more.
-
-3. Open `webpack.mix.js`, and set your theme name to `themeName` .
-
-4. Rename `resources/themes/input-theme-name` and `wp-content/themes/input-theme-name` to your theme name.
+8. Before deploying, run command for production.
+```
+$ npm run prod
+```
