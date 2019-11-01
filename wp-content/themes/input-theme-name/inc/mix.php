@@ -55,3 +55,17 @@ if (!function_exists('mix')) {
     return htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
   }
 }
+
+if (!function_exists('resolve_uri')) {
+  /**
+   * Get the url to a versioned Mix file.
+   *
+   * @param  string  $path
+   * @param  string  $manifestDirectory
+   * @return string
+   */
+  function resolve_uri($path, $manifestDirectory = '')
+  {
+    return get_stylesheet_directory_uri() . mix($path, $manifestDirectory);
+  }
+}

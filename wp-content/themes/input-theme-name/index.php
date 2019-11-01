@@ -9,7 +9,7 @@
   <title>Laravel Mix Boilerplate for WordPress</title>
   <link
     rel="stylesheet"
-    href="<?php echo get_stylesheet_directory_uri() . mix('/assets/css/app.css'); ?>"
+    href="<?php echo resolve_uri('/assets/css/app.css'); ?>"
   >
 </head>
 <body>
@@ -19,25 +19,25 @@
     <ul>
       <li class="gif">
         <img
-          src="<?php echo get_stylesheet_directory_uri() . mix('/assets/images/sample.gif'); ?>"
+          src="<?php echo resolve_uri('/assets/images/sample.gif'); ?>"
           alt="SAMPLE.GIF"
         >
       </li>
       <li class="jpeg">
         <img
-          src="<?php echo get_stylesheet_directory_uri() . mix('/assets/images/sample.jpeg'); ?>"
+          src="<?php echo resolve_uri('/assets/images/sample.jpeg'); ?>"
           alt="SAMPLE.JPEG"
         >
       </li>
       <li class="jpg">
         <img
-          src="<?php echo get_stylesheet_directory_uri() . mix('/assets/images/sample.jpg'); ?>"
+          src="<?php echo resolve_uri('/assets/images/sample.jpg'); ?>"
           alt="SAMPLE.JPG"
         >
       </li>
       <li class="png">
         <img
-          src="<?php echo get_stylesheet_directory_uri() . mix('/assets/images/sample.png'); ?>"
+          src="<?php echo resolve_uri('/assets/images/sample.png'); ?>"
           alt="SAMPLE.PNG"
         >
       </li>
@@ -55,6 +55,6 @@
       </li>
     </ul>
   </div>
-  <script src="<?php echo get_stylesheet_directory_uri() . mix('/assets/js/app.js'); ?>"></script>
+  <script src="<?php echo resolve_uri('/assets/js/app.js'); ?>"></script>
 </body>
 </html>
