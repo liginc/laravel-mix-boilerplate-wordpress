@@ -29,7 +29,7 @@ mix
     `${srcRelativePath}/assets/css/app.scss`,
     `${distRelativePath}/assets/css`
   )
-  .stylelint()
+  .stylelint({ context: srcRelativePath })
   .options({ processCssUrls: false })
   .webpackConfig({
     plugins: [
