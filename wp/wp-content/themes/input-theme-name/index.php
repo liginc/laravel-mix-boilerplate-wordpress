@@ -13,7 +13,7 @@
   >
 </head>
 <body>
-  <?php echo file_get_contents(get_stylesheet_directory() . '/assets/svg/sprite.svg'); ?>
+  <?php echo file_get_contents(dirname(__FILE__) . '/assets/svg/sprite.svg'); ?>
   <div class="js-target">
     <h1>Laravel Mix Boilerplate for WordPress</h1>
     <ul>
