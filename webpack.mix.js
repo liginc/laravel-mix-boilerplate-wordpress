@@ -2,11 +2,14 @@ const mix = require('laravel-mix')
 const fs = require('fs-extra')
 const multimatch = require('multimatch')
 const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin')
+const followEngineStrict = require ('follow-engine-strict')
 require('laravel-mix-polyfill')
 require('laravel-mix-copy-watched')
 require('laravel-mix-eslint')
 require('laravel-mix-stylelint')
 require('laravel-mix-imagemin')
+
+followEngineStrict()
 
 const srcRelativePath =
   (process.env.MIX_SRC_RELATIVE_PATH || 'resources/themes/input-theme-name')
