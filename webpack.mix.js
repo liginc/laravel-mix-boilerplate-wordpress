@@ -69,7 +69,8 @@ mix
     proxy: process.env.MIX_BROWSER_SYNC_PROXY || false,
     files: [
       `${distRelativePath}/assets/**/*`,
-      `${distRelativePath}/**/*.php`
+      `${distRelativePath}/**/*.php`,
+      `!${distRelativePath}/functions/autoload/99_acf_setting.php`
     ],
     https:
       process.env.MIX_BROWSER_SYNC_HTTPS_CERT &&
