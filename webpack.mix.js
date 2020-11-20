@@ -7,6 +7,7 @@ require('laravel-mix-copy-watched')
 require('laravel-mix-eslint')
 require('laravel-mix-stylelint')
 require('laravel-mix-imagemin')
+require('laravel-mix-webp')
 
 const srcRelativePath =
   (process.env.MIX_SRC_RELATIVE_PATH || 'resources/themes/input-theme-name')
@@ -101,6 +102,10 @@ if (process.env.NODE_ENV === 'production') {
       const manifest = require(`./${pathToManifest}`)
       delete manifest[`/${svgDummyModuleName}.js`]
       fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
+    })
+    .ImageWebp({
+      from: `${srcRelativePath}/assets/images`,
+      to: `${distRelativePath}/assets/images`,
     })
 }
 
