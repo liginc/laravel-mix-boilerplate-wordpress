@@ -1,0 +1,19 @@
+.sample {
+  list-style: none;
+}
+
+.sample-item {
+  margin: 6px 0;
+  opacity: 0;
+  transition: opacity .3s;
+
+  &.is-active {
+    opacity: 1;
+  }
+}
+
+.sample-image {
+  display: block;
+  width: 61px;
+  height: 18px;
+}
