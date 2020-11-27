@@ -1,0 +1,11 @@
+// Required to hide SVG sprite resource
+[data-svg-sprite] {
+  display: none;
+}
+
+// Not required
+* {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}

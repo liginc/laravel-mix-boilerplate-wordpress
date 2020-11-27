@@ -45,7 +45,7 @@ mix
             },
             svgo: {
               plugins: [
-                { addClassesToSVGElement: { className: 'svg-sprite' } }
+                { addAttributesToSVGElement: { attributes: [{ 'data-svg-sprite': '' }] } }
               ]
             },
             svg4everybody: true
