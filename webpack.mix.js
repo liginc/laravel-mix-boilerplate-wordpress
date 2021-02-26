@@ -1,5 +1,6 @@
 const mix = require('laravel-mix')
 const fs = require('fs-extra')
+const glob = require('glob')
 const multimatch = require('multimatch')
 const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin')
 require('laravel-mix-polyfill')
