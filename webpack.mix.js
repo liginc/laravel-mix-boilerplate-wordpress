@@ -1,5 +1,6 @@
 const mix = require('laravel-mix')
 const fs = require('fs-extra')
+const glob = require('glob')
 const multimatch = require('multimatch')
 const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin')
 require('laravel-mix-polyfill')
@@ -84,30 +85,35 @@ mix
   .sourceMaps(false, 'inline-cheap-module-source-map')
 
 if (process.env.NODE_ENV === 'production') {
-  mix
-    .version()
-    .imagemin(
-      [ 'assets/images/**/*' ],
-      { context: srcRelativePath },
-      {
-        test: filePath => !!multimatch(filePath, [ 'assets/images/**/*' ]).length,
-        pngquant: { strip: true, quality: 100-100 }, // 0 ~ 100
-        gifsicle: { optimizationLevel: 1 }, // 1 ~ 3
-        plugins: [ require('imagemin-mozjpeg')({ quality: 100 }) ] // 0 ~ 100
-      }
-    )
-    .then(() => {
-      const svgDummyModuleName = 'assets/js/.svg-dummy-module'
-      fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`)
-      const pathToManifest = `${distRelativePath}/mix-manifest.json`
-      const manifest = require(`./${pathToManifest}`)
-      delete manifest[`/${svgDummyModuleName}.js`]
-      fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
-    })
-    .ImageWebp({
-      from: `${srcRelativePath}/assets/images`,
-      to: `${distRelativePath}/assets/images`,
-    })
+    mix
+        .version()
+        .imagemin(
+            ['assets/images/**/*'],
+            {context: srcRelativePath},
+            {
+                test: filePath => !!multimatch(filePath, ['assets/images/**/*']).length,
+                pngquant: {strip: true, quality: 80}, // 0 ~ 100
+                gifsicle: {optimizationLevel: 1}, // 1 ~ 3
+                plugins: [require('imagemin-mozjpeg')({quality: 60})] // 0 ~ 100
+            }
+        )
+        .ImageWebp({
+            from: `${srcRelativePath}/assets/images`,
+            to: `${distRelativePath}/assets/images`,
+        })
+        .then(() => {
+            const svgDummyModuleName = 'assets/js/.svg-dummy-module'
+            const pathToManifest = `${distRelativePath}/mix-manifest.json`
+            const manifest = JSON.parse(fs.readFileSync(path.resolve(pathToManifest), 'utf8'));
+
+            fs.removeSync(`${distRelativePath}/${svgDummyModuleName}.js`)
+            delete manifest[`/${svgDummyModuleName}.js`]
+
+            glob.sync(`${distRelativePath}/assets/images/**/*.webp`).forEach((imagePath) => {
+                manifest[imagePath.replace(distRelativePath, '')] = imagePath.replace(distRelativePath, '') + '?id=' + new File(imagePath).version()
+            })
+            fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
+        })
 }
 
 else {
