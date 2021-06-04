@@ -26,6 +26,17 @@ mix
     `${distRelativePath}/assets/js`
   )
   .eslint()
+  .webpackConfig({
+    module: {
+      rules: [
+        {
+          test: /\.scss/,
+          enforce: 'pre',
+          loader: 'import-glob-loader'
+        }
+      ]
+    }
+  })
   .sass(
     `${srcRelativePath}/assets/css/app.scss`,
     `${distRelativePath}/assets/css`
