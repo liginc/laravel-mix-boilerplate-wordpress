@@ -23,6 +23,7 @@
     "eslint-plugin-vue": "^5.2.2",
     "imagemin-mozjpeg": "^8.0.0",
     "imagemin-webpack-plugin": "^2.4.2",
+    "import-glob-loader": "^1.1.0",
     "laravel-mix": "^5.0.9",
     "laravel-mix-copy-watched": "^2.2.1",
     "laravel-mix-eslint": "^0.1.3",
