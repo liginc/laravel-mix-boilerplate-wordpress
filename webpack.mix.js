@@ -27,6 +27,7 @@ mix
   )
   .eslint()
   .webpackConfig({
+<<<<<<< HEAD
        module: {
            rules: [{
                test: /\.scss/,
@@ -35,6 +36,18 @@ mix
            }]
        }
    })
+=======
+    module: {
+      rules: [
+        {
+          test: /\.scss/,
+          enforce: 'pre',
+          loader: 'import-glob-loader'
+        }
+      ]
+    }
+  })
+>>>>>>> 4a6ba1f0fb7680e235cc4ede3a27c3bf8e335295
   .sass(
     `${srcRelativePath}/assets/css/app.scss`,
     `${distRelativePath}/assets/css`
