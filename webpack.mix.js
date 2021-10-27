@@ -1,13 +1,15 @@
 const mix = require('laravel-mix')
+const path = require('path')
 const fs = require('fs-extra')
 const multimatch = require('multimatch')
 const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin')
+const fastGlob = require('fast-glob')
+const sharp = require('sharp')
 require('laravel-mix-polyfill')
 require('laravel-mix-copy-watched')
 require('laravel-mix-eslint')
 require('laravel-mix-stylelint')
 require('laravel-mix-imagemin')
-require('laravel-mix-webp')
 
 const srcRelativePath =
   (process.env.MIX_SRC_RELATIVE_PATH || 'resources/themes/input-theme-name')
@@ -113,10 +115,16 @@ if (process.env.NODE_ENV === 'production') {
       delete manifest[`/${svgDummyModuleName}.js`]
       fs.writeFileSync(path.resolve(pathToManifest), JSON.stringify(manifest), 'utf-8')
     })
-    .ImageWebp({
-      from: `${srcRelativePath}/assets/images`,
-      to: `${distRelativePath}/assets/images`,
-    })
+
+  // resources/themes/pureri/assets/images 内の jpg, png を webp に変換し同じディレクトリに出力する
+  const relativePathList =
+      fastGlob.sync(`${srcRelativePath}/assets/images/**/*.{jpg,png}`)
+  for (let relativePath of relativePathList) {
+      const extname = path.extname(relativePath)
+      const regExp = new RegExp(`${extname}$`, 'i')
+      const pathWithoutExtname = relativePath.replace(regExp, '')
+      sharp(relativePath).toFile(`${pathWithoutExtname}.webp`);
+  }
 }
 
 else {
