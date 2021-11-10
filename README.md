@@ -1,9 +1,13 @@
 # Laravel Mix Boilerplate for WordPress
 
-## 使用法
+## 使用方法
 
 `foobar-japan` というテーマの作成を例として説明します。  
 `foobar-japan` の箇所を、お好きなテーマ名に置き換えて読み進めてください。  
+
+### 必要環境
+- Node.js >= 12.13.0（nodeenv, nodebrew などの利用が望ましい）
+- Docker
 
 ### 準備（テーマ名変更）
 
